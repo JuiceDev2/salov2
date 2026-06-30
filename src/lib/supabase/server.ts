@@ -13,6 +13,7 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
+
         setAll(
           cookiesToSet: {
             name: string
@@ -25,7 +26,7 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             })
           } catch {
-            // ignore in server components
+            // Server Components ignore cookie writes
           }
         },
       },
