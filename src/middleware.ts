@@ -10,7 +10,7 @@ type Cookie = {
 }
 
 export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
+  let res = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -37,28 +37,13 @@ export async function middleware(req: NextRequest) {
 
   const isLogin = path === '/login'
 
-  // ❌ si NO está logueado → solo puede entrar a login
   if (!user && !isLogin) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  // ❌ si está logueado y entra a login → mandarlo a su dashboard
   if (user && isLogin) {
-    const { data: perfil, error } = await supabase
-      .from('perfiles')
-      .select('rol')
-      .eq('id', user.id)
-      .single()
-
-    const rol = perfil?.rol
-
-    let redirectTo = '/'
-
-    if (rol === 'admin') redirectTo = '/admin'
-    if (rol === 'propietaria') redirectTo = '/propietaria'
-    if (rol === 'estilista') redirectTo = '/estilista'
-
-    return NextResponse.redirect(new URL(redirectTo, req.url))
+    // opcional: dejar login limpio
+    return NextResponse.next()
   }
 
   return res

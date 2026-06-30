@@ -19,15 +19,10 @@ export async function createClient() {
         getAll() {
           return cookieStore.getAll()
         },
-
         setAll(cookiesToSet: Cookie[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) => {
-              cookieStore.set(name, value, options)
-            })
-          } catch {
-            // Server Components: cookies may be readonly in some contexts
-          }
+          cookiesToSet.forEach(({ name, value, options }) => {
+            cookieStore.set(name, value, options)
+          })
         },
       },
     }

@@ -5,13 +5,9 @@ import type { Perfil, Rol } from '@/types'
 export async function getUser() {
   const supabase = await createClient()
 
-  const {
-    data: { user },
-    error,
-  } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (error) return null
-  return user
+  return user ?? null
 }
 
 export async function getPerfil(): Promise<Perfil | null> {
@@ -20,18 +16,16 @@ export async function getPerfil(): Promise<Perfil | null> {
 
   if (!user) return null
 
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('perfiles')
-    .select('*, salon:salones(*)')
+    .select('*')
     .eq('id', user.id)
     .single()
-
-  if (error || !data) return null
 
   return data as Perfil
 }
 
-export async function requireAuth(): Promise<Perfil> {
+export async function requireAuth() {
   const perfil = await getPerfil()
 
   if (!perfil) redirect('/login')
@@ -40,7 +34,7 @@ export async function requireAuth(): Promise<Perfil> {
   return perfil
 }
 
-export async function requireRol(roles: Rol[]): Promise<Perfil> {
+export async function requireRol(roles: Rol[]) {
   const perfil = await requireAuth()
 
   if (!roles.includes(perfil.rol)) {
@@ -50,14 +44,14 @@ export async function requireRol(roles: Rol[]): Promise<Perfil> {
   return perfil
 }
 
-export function getDashboardByRol(rol: Rol): string {
+export function getDashboardByRol(rol: Rol) {
   switch (rol) {
-    case 'propietaria':
-      return '/propietaria'
     case 'admin':
       return '/admin'
     case 'estilista':
       return '/estilista'
+    case 'propietaria':
+      return '/propietaria'
     default:
       return '/'
   }
