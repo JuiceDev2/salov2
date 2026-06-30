@@ -1,56 +1,37 @@
-import { createClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/client'
 import { redirect } from 'next/navigation'
-import type { Perfil, Rol } from '@/types'
+
+export type Rol = 'propietaria' | 'admin' | 'estilista'
 
 export async function getUser() {
-  const supabase = await createClient()
+  const supabase = createClient()
 
-  const { data: { user }, error } = await supabase.auth.getUser()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  if (error) return null
   return user
 }
 
-export async function getPerfil(): Promise<Perfil | null> {
-  const supabase = await createClient()
+export async function getPerfil() {
+  const supabase = createClient()
   const user = await getUser()
 
   if (!user) return null
 
   const { data } = await supabase
     .from('perfiles')
-    .select('*, salon:salones(*)')
+    .select('*')
     .eq('id', user.id)
     .single()
 
-  return data as Perfil | null
+  return data
 }
 
-export async function requireAuth(): Promise<Perfil> {
-  const perfil = await getPerfil()
-
-  if (!perfil) redirect('/login')
-  if (!perfil.activo) redirect('/login?error=inactivo')
-
-  return perfil
-}
-
-export async function requireRol(roles: Rol[]) {
-  const perfil = await requireAuth()
-
-  if (!roles.includes(perfil.rol)) {
-    redirect(getDashboardByRol(perfil.rol))
-  }
-
-  return perfil
-}
-
-export function getDashboardByRol(rol: Rol): string {
+export function getDashboardByRol(rol: Rol) {
   switch (rol) {
-    case 'propietaria':
-      return '/propietaria'
     case 'admin':
       return '/admin'
+    case 'propietaria':
+      return '/propietaria'
     case 'estilista':
       return '/estilista'
     default:
