@@ -1,4 +1,5 @@
 import '@testing-library/jest-dom'
+import { vi, beforeAll, afterAll } from 'vitest'
 
 // Mock next/navigation — necesario para componentes que usan useRouter/usePathname
 vi.mock('next/navigation', () => ({
