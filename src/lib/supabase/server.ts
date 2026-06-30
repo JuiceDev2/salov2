@@ -2,6 +2,12 @@ import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import type { CookieOptions } from '@supabase/ssr'
 
+type Cookie = {
+  name: string
+  value: string
+  options?: CookieOptions
+}
+
 export async function createClient() {
   const cookieStore = await cookies()
 
@@ -14,19 +20,13 @@ export async function createClient() {
           return cookieStore.getAll()
         },
 
-        setAll(
-          cookiesToSet: {
-            name: string
-            value: string
-            options?: CookieOptions
-          }[]
-        ) {
+        setAll(cookiesToSet: Cookie[]) {
           try {
             cookiesToSet.forEach(({ name, value, options }) => {
               cookieStore.set(name, value, options)
             })
           } catch {
-            // Server Components ignore cookie writes
+            // Server Components: cookies may be readonly in some contexts
           }
         },
       },

@@ -4,7 +4,11 @@ import type { Perfil, Rol } from '@/types'
 
 export async function getUser() {
   const supabase = await createClient()
-  const { data: { user }, error } = await supabase.auth.getUser()
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
 
   if (error) return null
   return user
@@ -16,13 +20,15 @@ export async function getPerfil(): Promise<Perfil | null> {
 
   if (!user) return null
 
-  const { data } = await supabase
+  const { data, error } = await supabase
     .from('perfiles')
     .select('*, salon:salones(*)')
     .eq('id', user.id)
     .single()
 
-  return data as Perfil | null
+  if (error || !data) return null
+
+  return data as Perfil
 }
 
 export async function requireAuth(): Promise<Perfil> {
@@ -34,7 +40,7 @@ export async function requireAuth(): Promise<Perfil> {
   return perfil
 }
 
-export async function requireRol(...roles: Rol[]) {
+export async function requireRol(roles: Rol[]): Promise<Perfil> {
   const perfil = await requireAuth()
 
   if (!roles.includes(perfil.rol)) {
@@ -53,6 +59,6 @@ export function getDashboardByRol(rol: Rol): string {
     case 'estilista':
       return '/estilista'
     default:
-      return '/login'
+      return '/'
   }
 }

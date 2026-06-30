@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
-import { getDashboardByRol } from '@/lib/auth'
 
 export default function LoginForm() {
   const router = useRouter()
@@ -18,7 +17,7 @@ export default function LoginForm() {
 
     const supabase = createClient()
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
@@ -29,25 +28,19 @@ export default function LoginForm() {
       return
     }
 
-    // obtener perfil para redirección
-    const res = await fetch('/api/me')
-    const perfil = await res.json()
-
-    if (perfil?.rol) {
-      router.push(getDashboardByRol(perfil.rol))
-    } else {
-      router.push('/')
-    }
+    // 👇 redirección simple (NO server import)
+    router.push('/')
 
     setLoading(false)
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-4">
       <input
         value={email}
         onChange={(e) => setEmail(e.target.value)}
         placeholder="email"
+        className="border p-2 w-full"
       />
 
       <input
@@ -55,9 +48,10 @@ export default function LoginForm() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
         placeholder="password"
+        className="border p-2 w-full"
       />
 
-      <button disabled={loading}>
+      <button disabled={loading} className="bg-black text-white p-2 w-full">
         {loading ? 'Entrando...' : 'Login'}
       </button>
     </form>

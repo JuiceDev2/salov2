@@ -1,6 +1,13 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
+import type { CookieOptions } from '@supabase/ssr'
+
+type Cookie = {
+  name: string
+  value: string
+  options?: CookieOptions
+}
 
 export async function middleware(req: NextRequest) {
   const res = NextResponse.next()
@@ -13,9 +20,9 @@ export async function middleware(req: NextRequest) {
         getAll() {
           return req.cookies.getAll()
         },
-        setAll(cookiesToSet: any[]) {
-          cookiesToSet.forEach(({ name, value }) => {
-            res.cookies.set(name, value)
+        setAll(cookiesToSet: Cookie[]) {
+          cookiesToSet.forEach(({ name, value, options }) => {
+            res.cookies.set(name, value, options)
           })
         },
       },
@@ -28,15 +35,30 @@ export async function middleware(req: NextRequest) {
 
   const path = req.nextUrl.pathname
 
-  const publicRoutes = ['/login']
-  const isPublic = publicRoutes.includes(path)
+  const isLogin = path === '/login'
 
-  if (!user && !isPublic) {
+  // ❌ si NO está logueado → solo puede entrar a login
+  if (!user && !isLogin) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  if (user && path === '/login') {
-    return NextResponse.redirect(new URL('/', req.url))
+  // ❌ si está logueado y entra a login → mandarlo a su dashboard
+  if (user && isLogin) {
+    const { data: perfil, error } = await supabase
+      .from('perfiles')
+      .select('rol')
+      .eq('id', user.id)
+      .single()
+
+    const rol = perfil?.rol
+
+    let redirectTo = '/'
+
+    if (rol === 'admin') redirectTo = '/admin'
+    if (rol === 'propietaria') redirectTo = '/propietaria'
+    if (rol === 'estilista') redirectTo = '/estilista'
+
+    return NextResponse.redirect(new URL(redirectTo, req.url))
   }
 
   return res
