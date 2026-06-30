@@ -6,6 +6,8 @@ import type { Cliente, Cita } from '@/types'
 
 export const metadata = { title: 'Clientes' }
 
+type CitaConServicio = Cita & { servicio: { nombre: string } }
+
 export default async function ClientesPage() {
   const perfil = await requireRol('admin', 'propietaria')
   const supabase = await createClient()
@@ -23,10 +25,10 @@ export default async function ClientesPage() {
     .select('cliente_id, fecha_hora, estado, servicio:servicios(nombre)')
     .eq('salon_id', salonId)
     .eq('activo', true)
-    .order('fecha_hora', { ascending: false }) as { data: (Cita & { servicio: { nombre: string } })[] | null }
+    .order('fecha_hora', { ascending: false }) as { data: CitaConServicio[] | null }
 
   // Construir mapa cliente_id → última cita
-  const ultimaCitaMap: Record<string, (typeof ultimasCitas)[0]> = {}
+  const ultimaCitaMap: Record<string, CitaConServicio> = {}
   for (const cita of ultimasCitas ?? []) {
     if (!ultimaCitaMap[cita.cliente_id]) {
       ultimaCitaMap[cita.cliente_id] = cita
