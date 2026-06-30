@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/browser'
+import { createClient } from '@/lib/supabase/client'
 import toast from 'react-hot-toast'
 import { getDashboardByRol } from '@/lib/auth'
 import type { Rol } from '@/types'
