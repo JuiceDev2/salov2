@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+@theme {
+  /* ── Paleta principal ──────────────────────────────────── */
+  --color-salon-950: #1a0a0f;
+  --color-salon-900: #2d1018;
+  --color-salon-800: #5c1f30;
+  --color-salon-700: #8b2f47;
+  --color-salon-600: #b8415f;
+  --color-salon-500: #d4516f;
+  --color-salon-400: #e07a92;
+  --color-salon-300: #eaa8b8;
+  --color-salon-200: #f3cfd8;
+  --color-salon-100: #faeef1;
+  --color-salon-50:  #fdf6f8;
+
+  /* ── Neutros cálidos ───────────────────────────────────── */
+  --color-warm-950: #1c1917;
+  --color-warm-900: #292524;
+  --color-warm-800: #44403c;
+  --color-warm-700: #57534e;
+  --color-warm-600: #78716c;
+  --color-warm-500: #a8a29e;
+  --color-warm-400: #d6d3d1;
+  --color-warm-300: #e7e5e4;
+  --color-warm-200: #f5f5f4;
+  --color-warm-100: #fafaf9;
+
+  /* ── Semánticos ────────────────────────────────────────── */
+  --color-success: #16a34a;
+  --color-warning: #d97706;
+  --color-error:   #dc2626;
+  --color-info:    #2563eb;
+
+  /* ── Tipografía ────────────────────────────────────────── */
+  --font-sans: var(--font-geist-sans), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
+
+  /* ── Radios ────────────────────────────────────────────── */
+  --radius-card: 12px;
+  --radius-btn:  8px;
+}
+
+/* ── Base ──────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-warm-200);
+  color: var(--color-warm-900);
+}
+
+/* ── Scrollbar sutil ───────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-warm-400); border-radius: 999px; }
+
+/* ── Utilidades de componentes ─────────────────────────────── */
+.card {
+  background: white;
+  border-radius: var(--radius-card);
+  border: 1px solid var(--color-warm-300);
+  padding: 1.5rem;
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--color-salon-700);
+  color: white;
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 0.875rem;
+  transition: background 150ms;
+  cursor: pointer;
+  border: none;
+}
+.btn-primary:hover  { background: var(--color-salon-800); }
+.btn-primary:active { background: var(--color-salon-900); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: white;
+  color: var(--color-warm-800);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid var(--color-warm-300);
+  transition: all 150ms;
+  cursor: pointer;
+}
+.btn-secondary:hover { background: var(--color-warm-200); }
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: transparent;
+  color: var(--color-warm-700);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: none;
+  transition: background 150ms;
+  cursor: pointer;
+}
+.btn-ghost:hover { background: var(--color-warm-200); }
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: #fef2f2;
+  color: var(--color-error);
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-btn);
+  font-weight: 500;
+  font-size: 0.875rem;
+  border: 1px solid #fecaca;
+  transition: all 150ms;
+  cursor: pointer;
+}
+.btn-danger:hover { background: #fee2e2; }
+
+.input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  border: 1px solid var(--color-warm-300);
+  border-radius: var(--radius-btn);
+  font-size: 0.875rem;
+  font-family: var(--font-sans);
+  background: white;
+  color: var(--color-warm-900);
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.input:focus {
+  border-color: var(--color-salon-500);
+  box-shadow: 0 0 0 3px var(--color-salon-100);
+}
+.input::placeholder { color: var(--color-warm-500); }
+
+.label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--color-warm-700);
+  margin-bottom: 0.375rem;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.625rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
