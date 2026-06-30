@@ -19,15 +19,16 @@ export default function LoginForm() {
     const supabase = createClient()
 
     const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    })
+  email,
+  password,
+})
 
-    if (error) {
-      toast.error('Credenciales incorrectas')
-      setLoading(false)
-      return
-    }
+if (error) {
+  console.error('Error de Supabase:', error)
+  toast.error(error.message)
+  setLoading(false)
+  return
+}
 
     const { data } = await supabase.auth.getUser()
 

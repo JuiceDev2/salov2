@@ -1,16 +1,10 @@
-import { NextResponse } from 'next/server'
-import type { NextRequest } from 'next/server'
+import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
-import type { CookieOptions } from '@supabase/ssr'
 
-type Cookie = {
-  name: string
-  value: string
-  options?: CookieOptions
-}
-
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next()
+export async function middleware(request: NextRequest) {
+  let response = NextResponse.next({
+    request,
+  })
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -18,38 +12,30 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         getAll() {
-          return req.cookies.getAll()
+          return request.cookies.getAll()
         },
 
-        setAll(cookiesToSet: Cookie[]) {
+        setAll(
+          cookiesToSet: {
+            name: string
+            value: string
+            options?: any
+          }[]
+        ) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            res.cookies.set(name, value, options)
+            request.cookies.set(name, value)
+
+            response.cookies.set(name, value, options)
           })
         },
       },
     }
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // IMPORTANTE: refresca sesión
+  await supabase.auth.getUser()
 
-  const path = req.nextUrl.pathname
-
-  const publicRoutes = ['/login']
-  const isPublicRoute = publicRoutes.includes(path)
-
-  // 🚫 no autenticado
-  if (!user && !isPublicRoute) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
-
-  // 🚫 autenticado no puede ver login
-  if (user && path === '/login') {
-    return NextResponse.redirect(new URL('/', req.url))
-  }
-
-  return res
+  return response
 }
 
 export const config = {
