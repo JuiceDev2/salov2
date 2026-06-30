@@ -12,25 +12,31 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
 
-  async function handleSubmit(e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
+
+    if (!email || !password) {
+      toast.error('Ingresa email y contraseña')
+      return
+    }
+
     setLoading(true)
 
     const supabase = createClient()
 
     const { error } = await supabase.auth.signInWithPassword({
-  email,
-  password,
-})
+      email,
+      password,
+    })
 
-if (error) {
-  console.error('Error de Supabase:', error)
-  toast.error(error.message)
-  setLoading(false)
-  return
-}
+    if (error) {
+      console.error('Error de Supabase:', error)
+      toast.error(error.message)
+      setLoading(false)
+      return
+    }
 
-    const { data } = await supabase.auth.getUser()
+    const { data: userData } = await supabase.auth.getUser()
 
     const res = await fetch('/api/me')
     const perfil = await res.json()
@@ -45,12 +51,29 @@ if (error) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input value={email} onChange={e => setEmail(e.target.value)} />
-      <input type="password" value={password} onChange={e => setPassword(e.target.value)} />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+      <input
+        type="email"
+        placeholder="Correo"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        className="border p-2 rounded"
+      />
 
-      <button disabled={loading}>
-        {loading ? 'Entrando...' : 'Login'}
+      <input
+        type="password"
+        placeholder="Contraseña"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        className="border p-2 rounded"
+      />
+
+      <button
+        type="submit"
+        disabled={loading}
+        className="bg-black text-white p-2 rounded"
+      >
+        {loading ? 'Entrando...' : 'Iniciar sesión'}
       </button>
     </form>
   )
