@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
           return req.cookies.getAll()
         },
 
-        setAll(cookiesToSet: Cookie[]) {
+        setAll(cookiesToSet: any []) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set(name, value, options)
           })
