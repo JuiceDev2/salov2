@@ -21,7 +21,7 @@ export async function middleware(req: NextRequest) {
           return req.cookies.getAll()
         },
 
-        setAll(cookiesToSet: any []) {
+        setAll(cookiesToSet: Cookie[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set(name, value, options)
           })
@@ -39,10 +39,12 @@ export async function middleware(req: NextRequest) {
   const publicRoutes = ['/login']
   const isPublicRoute = publicRoutes.includes(path)
 
+  // 🚫 no autenticado
   if (!user && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
+  // 🚫 autenticado no puede ver login
   if (user && path === '/login') {
     return NextResponse.redirect(new URL('/', req.url))
   }
