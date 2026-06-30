@@ -10,7 +10,7 @@ type Cookie = {
 }
 
 export async function middleware(req: NextRequest) {
-  let res = NextResponse.next()
+  const res = NextResponse.next()
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,6 +20,7 @@ export async function middleware(req: NextRequest) {
         getAll() {
           return req.cookies.getAll()
         },
+
         setAll(cookiesToSet: Cookie[]) {
           cookiesToSet.forEach(({ name, value, options }) => {
             res.cookies.set(name, value, options)
@@ -35,15 +36,15 @@ export async function middleware(req: NextRequest) {
 
   const path = req.nextUrl.pathname
 
-  const isLogin = path === '/login'
+  const publicRoutes = ['/login']
+  const isPublicRoute = publicRoutes.includes(path)
 
-  if (!user && !isLogin) {
+  if (!user && !isPublicRoute) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
 
-  if (user && isLogin) {
-    // opcional: dejar login limpio
-    return NextResponse.next()
+  if (user && path === '/login') {
+    return NextResponse.redirect(new URL('/', req.url))
   }
 
   return res
